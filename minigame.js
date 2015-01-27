@@ -1,3 +1,4 @@
+;(function() {
 'use strict';
 
 var miniGame = {}
@@ -18,26 +19,57 @@ miniGame.utility = {
 	}
 }
 
-miniGame.assetManager = {
+/*miniGame.assetManager = {
 	assets: {},
 	loadAsset: function(key, asset){
+        var self = this;
 		var image = new Image();
 		image.src = asset;
-		this.assets[key] = image;
+		self.assets[key] = image;
 	},
 	loadAssets: function(){
-		miniGame.assetManager.loadAsset('ship', 'images/minigame_sprites/ship.png');
-		miniGame.assetManager.loadAsset('lives', 'images/minigame_sprites/hud_ship.png');
-		miniGame.assetManager.loadAsset('explosion', 'images/minigame_sprites/explosion.png');
-		miniGame.assetManager.loadAsset('bullet', 'images/minigame_sprites/bullet.png');
-		miniGame.assetManager.loadAsset('asteroid', 'images/minigame_sprites/asteroid.png');
+        var self = this;
+		self.loadAsset('ship', 'images/minigame_sprites/ship.png');
+		self.loadAsset('lives', 'images/minigame_sprites/hud_ship.png');
+		self.loadAsset('explosion', 'images/minigame_sprites/explosion.png');
+		self.loadAsset('bullet', 'images/minigame_sprites/bullet.png');
+		self.loadAsset('asteroid', 'images/minigame_sprites/asteroid.png');
 	},
 	getAsset: function(key){
-		return this.assets[key];
+        var self = this;
+		return self.assets[key];
 	},
 	removeAsset: function(key){
-		delete this.assets[key];
+        var self = this;
+		delete self.assets[key];
 	}
+}
+*/
+function assetManager() {
+    var self = this;
+    self.assets = {};
+}
+
+assetManager.prototype.loadAsset = function(key, asset) {
+    var self = this;
+    var image = new Image();
+    image.src = asset;
+    self.assets[key] = image;
+}
+
+assetManager.prototype.loadAssets = function(assets){
+    var self = this;
+    assets.map(function(a) { self.assets.push(a); } );
+}
+
+assetManager.prototype.getAsset = function(key){
+    var self = this;
+    return self.assets[key];
+}
+
+assetManager.prototype.removeAsset = function(key){
+    var self = this;
+    delete self.assets[key];
 }
 
 miniGame.player = {
@@ -437,4 +469,4 @@ miniGame.levelManager = {
 	}
 
 }
-
+])();
