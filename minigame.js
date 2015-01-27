@@ -78,6 +78,7 @@ miniGame.player = {
 	width: 32,
 	height: 32,
 	speed: 200,
+    /* create a class for player and pass this into the constructor */
 	sprite: miniGame.assetManager.getAsset('ship'),
 	bullets: [],
 	fireTimer: Date.now(),
@@ -93,82 +94,94 @@ miniGame.player = {
 		miniGame.player.sprite = miniGame.assetManager.getAsset('ship');
 	},
 	moveLeft: function(delta) {
-		this.x -= this.speed * delta;
+        var self = this;
+		self.x -= self.speed * delta;
 	},
 	moveRight: function(delta){
-		this.x += this.speed * delta;
+        var self = this;
+		self.x += self.speed * delta;
 	},
 	moveUp: function(delta){
-		this.y -= this.speed * delta;
+        var self = this;
+		self.y -= self.speed * delta;
 	},
 	moveDown: function(delta){
-		this.y += this.speed * delta;
+        var self = this;
+		self.y += self.speed * delta;
 	},
 	move: function(delta) {
-		if (65 in miniGame.keysDown) { this.moveLeft(delta); }
-	    if (87 in miniGame.keysDown) { this.moveUp(delta); }
-	    if (68 in miniGame.keysDown) { this.moveRight(delta); }
-	    if (83 in miniGame.keysDown) { this.moveDown(delta); }
-	    if (16 in miniGame.keysDown) { this.fire(); }
+        var self = this;
+		if (65 in miniGame.keysDown) { self.moveLeft(delta); }
+	    if (87 in miniGame.keysDown) { self.moveUp(delta); }
+	    if (68 in miniGame.keysDown) { self.moveRight(delta); }
+	    if (83 in miniGame.keysDown) { self.moveDown(delta); }
+	    if (16 in miniGame.keysDown) { self.fire(); }
 	},
 	fire: function(){
-		var fireDelta = Date.now() - this.fireTimer;
-		if(fireDelta > this.fireSpeed) {
+        var self = this;
+		var fireDelta = Date.now() - self.fireTimer;
+		if(fireDelta > self.fireSpeed) {
 			miniGame.bulletFactory.generate();
-			this.fireTimer = Date.now();
+			self.fireTimer = Date.now();
 		}
 	},
 	damage: function(amount){
-		if(this.health <= 0){
+        var self = this;
+		if(self.health <= 0){
 			miniGame.running = false;
 		} else {
-			this.health -= amount;
-			this.invincible = true;
-			this.opacity = .4;
+			self.health -= amount;
+			self.invincible = true;
+			self.opacity = .4;
 		}
 	},
 	handleInvincibility: function(){
-		var invDelta = Date.now() - this.invincibilityTimer;
-		if(invDelta > this.invincibilityDelay){
-			this.invincible = false;
-			this.opacity = 1;
-			this.invincibilityTimer = Date.now();
+        var self = this;
+		var invDelta = Date.now() - self.invincibilityTimer;
+		if(invDelta > self.invincibilityDelay){
+			self.invincible = false;
+			self.opacity = 1;
+			self.invincibilityTimer = Date.now();
 		}
 	},
 	windowCollision: function(){
+        var self = this;
 		/* top and left collisions */
-		if(this.x < 0) { this.x = 0; }
-		if(this.y < 0) { this.y = 0; }
+		if(self.x < 0) { self.x = 0; }
+		if(self.y < 0) { self.y = 0; }
 		/* bottom and left collisions */
-		if(this.x >= (miniGame.canvas.width - this.sprite.width) / 2) { 
-			this.x = (miniGame.canvas.width - this.sprite.width) / 2; 
+		if(self.x >= (miniGame.canvas.width - self.sprite.width) / 2) { 
+			self.x = (miniGame.canvas.width - self.sprite.width) / 2; 
 		}
-		if(this.y >= (miniGame.canvas.height - this.sprite.height) / 2) { 
-			this.y = (miniGame.canvas.height - this.sprite.height) / 2; 
+		if(self.y >= (miniGame.canvas.height - self.sprite.height) / 2) { 
+			self.y = (miniGame.canvas.height - self.sprite.height) / 2; 
 		}
 	},
 	asteroidCollision: function() {
+        var self = this;
 		for(var i=0; i<miniGame.asteroidFactory.asteroids.length; i++){
-			if(miniGame.utility.doBoxesIntersect(this, miniGame.asteroidFactory.asteroids[i])) {
-				if(!this.invincible){
-					miniGame.explosionFactory.generate(this.x - 5, this.y - 5);
-					this.damage(miniGame.asteroidFactory.dp);
+			if(miniGame.utility.doBoxesIntersect(self, miniGame.asteroidFactory.asteroids[i])) {
+				if(!self.invincible){
+					miniGame.explosionFactory.generate(self.x - 5, self.y - 5);
+					self.damage(miniGame.asteroidFactory.dp);
 				}	
 			}
 		}
 
 	},
 	update: function(delta){
-		this.move(delta);
-		this.windowCollision();
-		this.handleInvincibility();
-		this.asteroidCollision();
+        var self = this;
+		self.move(delta);
+		self.windowCollision();
+		self.handleInvincibility();
+		self.asteroidCollision();
 	}, 
 	render: function(){
+        var self = this;
 		/* render ship */
 		if(miniGame.running){
-			miniGame.drawSprite(this.sprite, (0.5 + this.x) << 0, (0.5 + this.y) << 0, 0, 0, 
-				this.sprite.width, this.sprite.height, this.opacity);
+			miniGame.drawSprite(self.sprite, (0.5 + self.x) << 0, (0.5 + self.y) << 0, 0, 0, 
+				self.sprite.width, self.sprite.height, self.opacity);
 		}
 	}
 }
@@ -176,25 +189,29 @@ miniGame.player = {
 miniGame.bulletFactory = {
 	bullets: [],
 	generate: function(){
+        var sef = this;
 		var tmpBullet = {
+            /* create a bullet factory class and pass this asset into constructor */
 			sprite: miniGame.assetManager.getAsset('bullet'),
 			x: miniGame.player.x + (miniGame.player.sprite.width / 2),
 			y: (miniGame.player.sprite.height / 4) + miniGame.player.y - 2,
 			speed: 350
 		}
-		this.bullets.push(tmpBullet);
+		self.bullets.push(tmpBullet);
 	},
 	update: function(delta) {
-		for(var i=0; i<this.bullets.length; i++) {
-			this.bullets[i].x += this.bullets[i].speed * delta;
-			if(this.bullets[i].x > miniGame.canvas.width + this.bullets[i].sprite.width){
-				this.bullets.splice(i, 1);
+        var self = this;
+		for(var i=0; i<self.bullets.length; i++) {
+			self.bullets[i].x += self.bullets[i].speed * delta;
+			if(self.bullets[i].x > miniGame.canvas.width + self.bullets[i].sprite.width){
+				self.bullets.splice(i, 1);
 			}
 		}
 	},
 	render: function(){
-		for(var i=0; i<this.bullets.length; i++) {
-			miniGame.drawSprite(this.bullets[i].sprite, this.bullets[i].x, this.bullets[i].y);
+        var self = this;
+		for(var i=0; i<self.bullets.length; i++) {
+			miniGame.drawSprite(self.bullets[i].sprite, self.bullets[i].x, self.bullets[i].y);
 		}
 	}
 
@@ -206,8 +223,10 @@ miniGame.asteroidFactory = {
 	asteroidTimer: Date.now(),
 	dp: 20,
 	generate: function(){
-		var asteroidDelta = Date.now() - this.asteroidTimer;
-		if(asteroidDelta > this.createTime && miniGame.running){
+        var self = this;
+		var asteroidDelta = Date.now() - self.asteroidTimer;
+		if(asteroidDelta > self.createTime && miniGame.running){
+            /* create class and pass into constructor */
 			var tmpSprite = miniGame.assetManager.getAsset('asteroid');
 			var tmpAsteroid = {
 				sprite: miniGame.assetManager.getAsset('asteroid'),
@@ -216,17 +235,18 @@ miniGame.asteroidFactory = {
 				speed: 200, 
 				health: 100
 			}
-			this.asteroids.push(tmpAsteroid);
-			this.asteroidTimer = Date.now();
+			self.asteroids.push(tmpAsteroid);
+			self.asteroidTimer = Date.now();
 		}
 	},
 	bulletCollision: function(){
-		for(var i=0; i<this.asteroids.length; i++){
+        var self = this;
+		for(var i=0; i<self.asteroids.length; i++){
 			/* only take it to O(n^2) if bullet is on the screen */
-			if(this.asteroids[i].x < miniGame.canvas.width){
+			if(self.asteroids[i].x < miniGame.canvas.width){
 				for(var y=0; y<miniGame.bulletFactory.bullets.length; y++){
-					if(miniGame.utility.doBoxesIntersect(this.asteroids[i], miniGame.bulletFactory.bullets[y])){
-						this.damage(this.asteroids[i]);
+					if(miniGame.utility.doBoxesIntersect(self.asteroids[i], miniGame.bulletFactory.bullets[y])){
+						self.damage(self.asteroids[i]);
 						var bullX = miniGame.bulletFactory.bullets[y].x;
 						var bullY = miniGame.bulletFactory.bullets[y].y - 15;
 						miniGame.explosionFactory.generate(bullX, bullY)
@@ -237,27 +257,31 @@ miniGame.asteroidFactory = {
 		}
 	},
 	update: function(delta){
-		this.generate();
-		this.bulletCollision();
-		for(var i=0; i<this.asteroids.length; i++) {
-			this.asteroids[i].x -= this.asteroids[i].speed * delta;
-			if(this.asteroids[i].x < -10){
-				this.asteroids.splice(i, 1);
+        var self = this;
+		self.generate();
+		self.bulletCollision();
+		for(var i=0; i<self.asteroids.length; i++) {
+			self.asteroids[i].x -= self.asteroids[i].speed * delta;
+			if(self.asteroids[i].x < -10){
+				self.asteroids.splice(i, 1);
 			}
 		}
 	},
 	render: function(){
-		for(var i=0; i<this.asteroids.length; i++) {
-			miniGame.drawSprite(this.asteroids[i].sprite, this.asteroids[i].x, this.asteroids[i].y);
+        var self = this;
+		for(var i=0; i<self.asteroids.length; i++) {
+			miniGame.drawSprite(self.asteroids[i].sprite, self.asteroids[i].x, self.asteroids[i].y);
 		}
 	},
 	remove: function(asteroid){
-		var ast = this.asteroids.indexOf(asteroid)
-		this.asteroids.splice(ast, 1);
+        var self = this;
+		var ast = self.asteroids.indexOf(asteroid)
+		self.asteroids.splice(ast, 1);
 	},
 	damage: function(asteroid){
+        var self = this;
 		if(asteroid.health <= 0){
-			this.remove(asteroid);
+			self.remove(asteroid);
 			miniGame.player.score += 20;
 		} else {
 			asteroid.health -= 20;
@@ -270,11 +294,12 @@ miniGame.explosionFactory = {
 	explosions: [],
 	frames: 25,
 	generate: function(x, y){
+        var self = this;
 		var tmpSprite = miniGame.assetManager.getAsset('explosion');
 		var tmpExp = {
 			x: x,
 			y: y,
-			frames: this.frames,
+			frames: self.frames,
 			currFrame: 0,
 			sprite: tmpSprite,
 			frameWidth: 50,
@@ -283,36 +308,40 @@ miniGame.explosionFactory = {
 			frameTimer: Date.now(),
 			isAlive: true,
 			advanceFrame: function(){
-				if(this.currFrame === this.frames - 1) { this.isAlive = false; }
-				var frameDelta = Date.now() - this.frameTimer;
-				if(frameDelta > this.frameDelay && this.isAlive){
-					this.currFrame++;	
+                var self = this;
+				if(self.currFrame === self.frames - 1) { self.isAlive = false; }
+				var frameDelta = Date.now() - self.frameTimer;
+				if(frameDelta > self.frameDelay && self.isAlive){
+					self.currFrame++;	
 				}
 			}
 		}
 
-		this.explosions.push(tmpExp);
+		self.explosions.push(tmpExp);
 	},
 	update: function(){
-		for(var i=0; i<this.explosions.length; i++){
-			this.explosions[i].advanceFrame();
+        var self = this;
+		for(var i=0; i<self.explosions.length; i++){
+			self.explosions[i].advanceFrame();
 		}
 	},
 	render: function(){
-		for(var i=0; i<this.explosions.length; i++){
-			if(this.explosions[i].isAlive) { 
-				var clipX = (this.explosions[i].currFrame % 5) * 50;
-	            var clipY = Math.floor( (this.explosions[i].currFrame / 250) * 50) * 50;
-				miniGame.drawSprite(this.explosions[i].sprite, this.explosions[i].x, this.explosions[i].y, 
+        var self = this;
+		for(var i=0; i<self.explosions.length; i++){
+			if(self.explosions[i].isAlive) { 
+				var clipX = (self.explosions[i].currFrame % 5) * 50;
+	            var clipY = Math.floor( (self.explosions[i].currFrame / 250) * 50) * 50;
+				miniGame.drawSprite(self.explosions[i].sprite, self.explosions[i].x, self.explosions[i].y, 
 					clipX, clipY, 50, 50);
 			} else {
-				this.remove(this.explosions[i].isAlive);
+				self.remove(self.explosions[i].isAlive);
 			}
 		}
 	},
 	remove: function(explosion){
-		var exp = this.explosions.indexOf(explosion)
-		this.explosions.splice(exp, 1);
+        var self = this;
+		var exp = self.explosions.indexOf(explosion)
+		self.explosions.splice(exp, 1);
 	}
 }
 
@@ -350,6 +379,7 @@ miniGame.drawSprite = function(imageObject, x, y, sx, sy, sw, sh, opacity, rotat
     opacity = opacity || 1;
     miniGame.ctx.save();
     miniGame.ctx.translate(x, y);
+    /* this slows down drawing routine */
     //miniGame.ctx.rotate(rotation);
     //miniGame.ctx.scale(scale, scale);
     miniGame.ctx.globalAlpha = opacity;
