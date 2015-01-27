@@ -59,7 +59,7 @@ assetManager.prototype.loadAsset = function(key, asset) {
 
 assetManager.prototype.loadAssets = function(assets){
     var self = this;
-    assets.map(function(a) { self.assets.push(a); } );
+    self.assets = assets;
 }
 
 assetManager.prototype.getAsset = function(key){
